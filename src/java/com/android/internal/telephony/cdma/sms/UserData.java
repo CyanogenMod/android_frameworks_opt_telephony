@@ -38,6 +38,7 @@ public class UserData {
     public static final int ENCODING_LATIN                      = 0x08;
     public static final int ENCODING_GSM_7BIT_ALPHABET          = 0x09;
     public static final int ENCODING_GSM_DCS                    = 0x0A;
+    public static final int ENCODING_KSC5601                    = 0x10;
 
     /**
      * User data message type encoding types.

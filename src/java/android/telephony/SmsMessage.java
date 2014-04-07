@@ -368,6 +368,43 @@ public class SmsMessage {
         int pos = 0;  // Index in code units.
         int textLen = text.length();
         ArrayList<String> result = new ArrayList<String>(ted.msgCount);
+	// For LGT SMS
+        int MAX_LGT_SMS_BYTES = 100;
+	int textbyteSize = 0;
+	byte[] textbyte = {0};
+	try {
+		textbyte = text.getBytes("KSC5601");
+		textbyteSize = textbyte.length;
+	} catch (Exception ex) {
+		Log.e(LOG_TAG, "fragmentText getBytes error1: " + ex);
+	}
+
+	// msg byte <= MAX Byte
+	if ( textbyteSize <= MAX_LGT_SMS_BYTES )
+	    result.add(text);
+
+	// msg byte >= MAX Byte
+	else {
+	    while (ted.msgCount > 0) {
+	    	ted.msgCount--;
+	    	int textSize = 0;
+            	int nextPos = 0;  // Counts code units.
+	    	String tmptext = "";
+	    	while ( (textSize < MAX_LGT_SMS_BYTES) && ((pos + nextPos) < textLen) ) {
+		    nextPos++;
+		    tmptext = text.substring(pos, pos + nextPos);
+		    try {
+			     byte[] tmptextbyte = tmptext.getBytes("KSC5601");
+			     textSize = tmptextbyte.length;
+		    } catch (Exception ex) {
+			     Log.e(LOG_TAG, "fragmentText getBytes error2: " + ex);
+		    }		    
+	        }
+            	result.add(text.substring(pos, pos + nextPos));
+            	pos += nextPos;
+            }
+	}
+        /*
         while (pos < textLen) {
             int nextPos = 0;  // Counts code units.
             if (ted.codeUnitSize == SmsConstants.ENCODING_7BIT) {
@@ -390,6 +427,7 @@ public class SmsMessage {
             result.add(text.substring(pos, nextPos));
             pos = nextPos;
         }
+   */
         return result;
     }
 
