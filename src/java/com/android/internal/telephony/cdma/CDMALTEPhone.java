@@ -233,10 +233,31 @@ public class CDMALTEPhone extends CDMAPhone {
         return false;
     }
 
-    // return IMSI from USIM as subscriber ID.
+    // return IMSI from CSIM as subscriber ID if available, otherwise reads from USIM
     @Override
     public String getSubscriberId() {
-        return (mSimRecords != null) ? mSimRecords.getIMSI() : "";
+        IccRecords r = (mIccRecords != null) ? mIccRecords.get() : null;
+        if (r != null) {
+            String imsi = r.getIMSI();
+            if (!TextUtils.isEmpty(imsi)) {
+                log("IMSI = " + imsi);
+                return imsi;
+            }
+        }
+
+        log("IMSI undefined");
+        return "";
+    }
+
+
+    // fix CTS test expecting IMEI to be used as device ID when in LteOnCdma mode
+    @Override
+    public String getDeviceId() {
+        if (TelephonyManager.getLteOnCdmaModeStatic() == PhoneConstants.LTE_ON_CDMA_TRUE) {
+            return mImei;
+        } else {
+            return super.getDeviceId();
+        }
     }
 
     // return GID1 from USIM
