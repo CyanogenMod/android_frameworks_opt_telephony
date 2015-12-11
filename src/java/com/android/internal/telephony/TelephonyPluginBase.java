@@ -30,6 +30,7 @@ package com.android.internal.telephony;
 
 import android.content.Context;
 
+import com.android.internal.telephony.cdma.CDMAPhone;
 import com.android.internal.telephony.cdma.CDMALTEPhone;
 import com.android.internal.telephony.dataconnection.DcTracker;
 import com.android.internal.telephony.dataconnection.DctController;
@@ -69,6 +70,12 @@ public abstract class TelephonyPluginBase implements TelephonyPluginInterface {
     public PhoneBase makeGSMPhone(Context context, CommandsInterface ci,
             PhoneNotifier notifier, int phoneId) {
         return new GSMPhone(context, ci, notifier, phoneId);
+    }
+
+    @Override
+    public PhoneBase makeCDMAPhone(Context context, CommandsInterface ci,
+            PhoneNotifier notifier, int phoneId) {
+        return new CDMAPhone(context, ci, notifier, phoneId);
     }
 
     @Override

@@ -127,6 +127,11 @@ public class TelephonyPluginDelegate {
         return sPlugin.makeGSMPhone(context, ci, notifier, phoneId);
     }
 
+    public PhoneBase makeCDMAPhone(Context context, CommandsInterface ci,
+            PhoneNotifier notifier, int phoneId) {
+        return sPlugin.makeCDMAPhone(context, ci, notifier, phoneId);
+    }
+
     public PhoneBase makeCDMALTEPhone(Context context, CommandsInterface ci,
             PhoneNotifier notifier, int phoneId) {
         return sPlugin.makeCDMALTEPhone(context, ci, notifier, phoneId);

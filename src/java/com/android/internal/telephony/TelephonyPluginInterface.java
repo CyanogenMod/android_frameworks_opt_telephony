@@ -49,6 +49,9 @@ public interface TelephonyPluginInterface {
     public PhoneBase makeGSMPhone(Context context, CommandsInterface ci,
             PhoneNotifier notifier, int phoneId);
 
+    public PhoneBase makeCDMAPhone(Context context, CommandsInterface ci,
+            PhoneNotifier notifier, int phoneId);
+
     public PhoneBase makeCDMALTEPhone(Context context, CommandsInterface ci,
             PhoneNotifier notifier, int phoneId);
 
