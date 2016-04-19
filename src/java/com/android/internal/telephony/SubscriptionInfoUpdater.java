@@ -105,7 +105,6 @@ public class SubscriptionInfoUpdater extends Handler {
     private static Phone[] mPhone;
     private CommandsInterface[] mCommandsInterfaces;
     private static Context mContext = null;
-    private static IccFileHandler[] mFh = new IccFileHandler[PROJECT_SIM_NUM];
     protected static String mIccId[] = new String[PROJECT_SIM_NUM];
     private static int[] mInsertSimState = new int[PROJECT_SIM_NUM];
     private SubscriptionManager mSubscriptionManager = null;
@@ -291,7 +290,7 @@ public class SubscriptionInfoUpdater extends Handler {
                         mIccId[slotId] = ICCID_STRING_FOR_NO_SIM;
                     }
                 } else {
-                    mIccId[slotId] = mFh[slotId].needsFakeIccid() ? IccConstants.FAKE_ICCID : ICCID_STRING_FOR_NO_SIM;
+                    mIccId[slotId] = IccConstants.FAKE_ICCID;
                     logd("Query IccId fail: " + ar.exception);
                 }
                 logd("sIccId[" + slotId + "] = " + mIccId[slotId]);
