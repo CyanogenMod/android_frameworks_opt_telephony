@@ -745,6 +745,11 @@ public abstract class IccFileHandler extends Handler implements IccConstants {
         logd("Using " + (useLocalPb ? "Local": "Global") + " Phonebook");
         mUseLocalPb = useLocalPb;
     }
+ 
+    public boolean needsFakeIccid() {
+        return mCi.needsOldRilFeature("fakeiccid");
+    }
+
     protected abstract String getEFPath(int efid);
     protected abstract void logd(String s);
 
