@@ -187,7 +187,8 @@ public class SubscriptionController extends ISub.Stub {
     }
 
     private boolean isSubInfoReady() {
-        return sSlotIdxToSubId.size() > 0;
+        final SubscriptionInfoUpdater subUpdater = PhoneFactory.getSubscriptionInfoUpdater();
+        return subUpdater != null && sSlotIdxToSubId.size() == subUpdater.getInsertedSimCount();
     }
 
     private SubscriptionController(Phone phone) {
@@ -663,7 +664,7 @@ public class SubscriptionController extends ISub.Stub {
     @Override
     public int getActiveSubInfoCountMax() {
         // FIXME: This valid now but change to use TelephonyDevController in the future
-        return mTelephonyManager.getSimCount();
+        return TelephonyManager.getDefault().getSimCount();
     }
 
     /**
@@ -753,23 +754,29 @@ public class SubscriptionController extends ISub.Stub {
                             // may not be true, for instance with multiple subs per slot.
                             // But is true at the moment.
                             sSlotIdxToSubId.put(slotId, subId);
-                            int subIdCountMax = getActiveSubInfoCountMax();
+                            int simCount = PhoneFactory.getSubscriptionInfoUpdater()
+                                    .getInsertedSimCount();
                             int defaultSubId = getDefaultSubId();
                             if (DBG) {
                                 logdl("[addSubInfoRecord]"
                                         + " sSlotIdxToSubId.size=" + sSlotIdxToSubId.size()
                                         + " slotId=" + slotId + " subId=" + subId
-                                        + " defaultSubId=" + defaultSubId + " simCount=" + subIdCountMax);
+                                        + " defaultSubId=" + defaultSubId + " simCount=" + simCount);
+                            }
+
+                            if (!isSubInfoReady()) {
+                                continue;
                             }
 
                             // Set the default sub if not set or if single sim device
                             // Also set default sub, if current default subId is not active
                             if (!SubscriptionManager.isValidSubscriptionId(defaultSubId)
-                                    || subIdCountMax == 1 || (!isActiveSubId(defaultSubId))) {
+                                    || simCount == 1 || (!isActiveSubId(defaultSubId))) {
                                 setDefaultFallbackSubId(subId);
                             }
                             // If single sim device, set this subscription as the default for everything
-                            if (subIdCountMax == 1) {
+                            if (simCount == 1
+                                    && TelephonyManager.getDefault().getSimCount() == 1) {
                                 if (DBG) {
                                     logdl("[addSubInfoRecord] one sim set defaults to subId=" + subId);
                                 }
@@ -777,19 +784,6 @@ public class SubscriptionController extends ISub.Stub {
                                 setDefaultSmsSubId(subId);
                                 setDefaultVoiceSubId(subId);
                             }
-
-                            // FIXME: Workaround the scenario where default sms subid is not
-                            // being set externally
-                            // CYNGNOS-2185
-                            int phoneId = SubscriptionController.getInstance().getPhoneId(
-                                    getDefaultSmsSubId());
-                            if (phoneId < 0 || phoneId >= TelephonyManager.getDefault()
-                                    .getPhoneCount()) {
-                                Rlog.i(LOG_TAG, "Subscription is invalid. Set default to " + subId);
-                                setDefaultSmsSubId(subId);
-                                PhoneFactory.setSMSPromptEnabled(subIdCountMax > 1);
-                            }
-
                         } else {
                             if (DBG) {
                                 logdl("[addSubInfoRecord] currentSubId != null"
@@ -837,10 +831,6 @@ public class SubscriptionController extends ISub.Stub {
             updateAllDataConnectionTrackers();
 
             if (DBG) logdl("[addSubInfoRecord]- info size=" + sSlotIdxToSubId.size());
-
-            if (PhoneFactory.getSubscriptionInfoUpdater().getInsertedSimCount() <= 1) {
-                PhoneFactory.setSMSPromptEnabled(false);
-            }
 
         } finally {
             Binder.restoreCallingIdentity(identity);
