@@ -195,7 +195,7 @@ public class PhoneFactory {
                     }
                     Rlog.i(LOG_TAG, "Creating Phone with type = " + phoneType + " sub = " + i);
 
-                    sProxyPhones[i] = new PhoneProxy(phone);
+                    sProxyPhones[i] = TelephonyPluginDelegate.getInstance().makePhoneProxy(phone);
                 }
                 mProxyController = ProxyController.getInstance(context, sProxyPhones,
                         mUiccController, sCommandsInterfaces);
@@ -384,6 +384,13 @@ public class PhoneFactory {
                 Rlog.d(LOG_TAG, "calculatePreferredNetworkType: overriding for usernw mode " +
                         "phoneSubId = " + phoneSubId + " networkType = " + networkType);
                 networkType = userNwType;
+            }
+
+            //Update phone id based network type with Sub ID based.
+            if (networkType != phoneIdNetworkType) {
+                TelephonyManager.putIntAtIndex(context.getContentResolver(),
+                        Settings.Global.PREFERRED_NETWORK_MODE, phoneId,
+                        networkType);
             }
         } else {
             Rlog.d(LOG_TAG, "calculatePreferredNetworkType: phoneSubId = " + phoneSubId +

@@ -153,6 +153,7 @@ public class CDMAPhone extends PhoneBase {
         super("CDMA", notifier, context, ci, false, phoneId);
         initSstIcc();
         init(context, notifier);
+        notifyPhoneStateChanged();
     }
 
     protected void initSstIcc() {
@@ -457,12 +458,10 @@ public class CDMAPhone extends PhoneBase {
                 && ImsManager.isNonTtyOrTtyOnVolteEnabled(mContext)
                 && (imsPhone.getServiceState().getState() != ServiceState.STATE_POWER_OFF);
 
-        boolean useImsForUt = imsPhone != null && imsPhone.isUtEnabled()
-                && dialString.endsWith("#");
-
         boolean isUt = PhoneNumberUtils.extractNetworkPortionAlt(PhoneNumberUtils.
                 stripSeparators(dialString)).endsWith("#");
 
+        boolean useImsForUt = imsPhone != null && imsPhone.isUtEnabled();
 
         if (DBG) {
             Rlog.d(LOG_TAG, "imsUseEnabled=" + imsUseEnabled
