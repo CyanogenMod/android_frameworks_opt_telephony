@@ -691,9 +691,9 @@ public final class RuimRecords extends IccRecords {
 
                 if (ar.exception != null) {
                     mIccId = FAKE_ICCID;
-+                }
-+                else {
-+                    mIccId = IccUtils.bcdToString(data, 0, data.length);
+                }
+                else {
+                    mIccId = IccUtils.bcdToString(data, 0, data.length);
                 }
 
 
