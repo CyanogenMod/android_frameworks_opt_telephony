@@ -1,12 +1,9 @@
 package com.android.internal.telephony.uicc;
 
-import android.telephony.Rlog;
-
 /**
  * UICC TLV Data Parser according to ETSI TS 102 221 spec.
  */
 public class UiccTlvData {
-    private static final String LOG_TAG = "UiccTlvData";
 
     private static final int TLV_FORMAT_ID = 0x62;
 
@@ -85,9 +82,9 @@ public class UiccTlvData {
                         break;
 
                     default:
-                        Rlog.d(LOG_TAG, "Unknown tag 0x" + String.format("%02X", currentTag));
-                        currentLocation = parsedData.parseSomeTag(data, currentLocation);
-                        break;
+                        //Unknown TAG
+                        throw new IccFileTypeMismatch();
+
                 }
             }
 
@@ -154,4 +151,3 @@ public class UiccTlvData {
     }
 
 }
-
