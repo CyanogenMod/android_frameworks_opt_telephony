@@ -2008,12 +2008,4 @@ public interface CommandsInterface {
 
     void registerForModemCapEvent(Handler h, int what, Object obj);
     void unregisterForModemCapEvent(Handler h);
-
-    /**
-     * @hide
-     * samsung stk service implementation - set up registrant for sending
-     * sms send result from modem(RIL) to catService
-     */
-    void setOnCatSendSmsResult(Handler h, int what, Object obj);
-    void unSetOnCatSendSmsResult(Handler h);
 }
